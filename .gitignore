@@ -50,7 +50,7 @@ build/
 [Bb]in/
 [Oo]bj/
 
-# MSTest test Results
+# MSTest tsp.test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 
@@ -204,7 +204,7 @@ develop-eggs/
 # Installer logs
 pip-log.txt
 
-# Unit test / coverage reports
+# Unit tsp.test / coverage reports
 .coverage
 .tox
 
@@ -217,3 +217,4 @@ pip-log.txt
 /out
 /.idea
 *.iml
+*.class

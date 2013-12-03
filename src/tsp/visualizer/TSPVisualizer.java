@@ -7,8 +7,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class TSPVisualizer extends JFrame {
+  private static int MAPWIDTH = 500;
+  private static int MAPHEIGHT = 500;
+  private static float SCALEX;
+  private static float SCALEY;
   private Point[] tspInstance;
   private TSPCanvas canvas;
+  private float maxX = 0, maxY = 0;
   public TSPVisualizer() {
     try {
       init();
@@ -23,7 +28,7 @@ public class TSPVisualizer extends JFrame {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setLayout(new BorderLayout());
     //setLayout(new FlowLayout());
-    setSize(500, 500);
+    setSize(MAPWIDTH, MAPHEIGHT);
     setTitle("TSP map");
     setLocationRelativeTo(null);
     setVisible(true);
@@ -34,14 +39,21 @@ public class TSPVisualizer extends JFrame {
     int numOfPoints = Integer.parseInt(br.readLine());
     tspInstance = new Point[numOfPoints];
     String[] coordinates;
+    float x, y;
     for(int i = 0; i < numOfPoints; i++) {
       coordinates = br.readLine().split(" ");
-      tspInstance[i] = new Point(coordinates[0], coordinates[1]);
+      x = Float.parseFloat(coordinates[0]);
+      y = Float.parseFloat(coordinates[1]);
+      if(x > maxX) maxX = x;
+      if(y > maxY) maxY = y;
+      tspInstance[i] = new Point(x,y);
     }
+    SCALEX = (MAPWIDTH-20)/maxX;
+    SCALEY = (MAPHEIGHT-20)/maxY;
   }
 
   private void drawInstance() {
-    canvas = new TSPCanvas();
+    canvas = new TSPCanvas(tspInstance);
     add("Center", canvas);
   }
 
@@ -85,10 +97,38 @@ public class TSPVisualizer extends JFrame {
   }
 
   private class TSPCanvas extends Canvas {
+    private Point[] points;
+    public TSPCanvas(Point[] points){
+      this.points = points;
+    }
+
     @Override
     public void paint(Graphics g) {
       g.drawString("TSPCanvas", 10, 20);
+      drawBackground(g);
+      drawPoints(g);
+      //g.fillRect(50, 50, 5, 5);
     }
+
+    private void drawBackground(Graphics g) {
+      g.setColor(new Color(255,255,255));
+      g.fillRect(0, 0, MAPWIDTH, MAPHEIGHT);
+      g.setColor(new Color(0,0,0));
+      g.drawRect(0,0, MAPWIDTH, MAPHEIGHT);
+    }
+
+    private void drawPoints(Graphics g) {
+      int x, y;
+      for(int i = 0; i < points.length; i++) {
+        x = (int) (points[i].getX()*SCALEX);
+        y = (int) (points[i].getY()*SCALEY);
+        g.setColor(new Color(0,0,0));
+        g.drawRect(x, y, 5, 5);
+        g.setColor(new Color(20, 167, 8));
+        g.fillRect(x, y, 5, 5);
+      }
+    }
+
   }
 
   public static void main(String[] args) {
