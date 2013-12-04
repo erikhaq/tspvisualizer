@@ -6,18 +6,28 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/*
+  Run example:
+  javac ../src/tsp/visualizer/TSPVisualizer.java -d . && cat ../src/test1.in ../src/test1.out | java tsp.visualizer.TSPVisualizer
+ */
 public class TSPVisualizer extends JFrame {
+  BufferedReader br;
   private static int MAPWIDTH = 500;
   private static int MAPHEIGHT = 500;
+  private static int MARGINTOP = 50;
+  private static int MARGINLEFT = 50;
   private static float SCALEX;
   private static float SCALEY;
+  private int numOfPoints;
   private Point[] tspInstance;
+  private int[] route;
   private TSPCanvas canvas;
   private float maxX = 0, maxY = 0;
   public TSPVisualizer() {
     try {
       init();
       readInstance();
+      readTour();
       drawInstance();
     } catch (Exception e) {
       e.printStackTrace();
@@ -25,18 +35,18 @@ public class TSPVisualizer extends JFrame {
   }
 
   private void init() {
+    br = new BufferedReader(new InputStreamReader(System.in));
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setLayout(new BorderLayout());
     //setLayout(new FlowLayout());
-    setSize(MAPWIDTH, MAPHEIGHT);
+    setSize(MAPWIDTH+100, MAPHEIGHT+200);
     setTitle("TSP map");
     setLocationRelativeTo(null);
     setVisible(true);
   }
 
   private void readInstance() throws IOException {
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    int numOfPoints = Integer.parseInt(br.readLine());
+    numOfPoints = Integer.parseInt(br.readLine());
     tspInstance = new Point[numOfPoints];
     String[] coordinates;
     float x, y;
@@ -50,22 +60,35 @@ public class TSPVisualizer extends JFrame {
     }
     SCALEX = (MAPWIDTH-20)/maxX;
     SCALEY = (MAPHEIGHT-20)/maxY;
+    //br.close();
+  }
+
+  private void readTour() throws IOException {
+    route = new int[numOfPoints];
+    for(int i = 0; i < numOfPoints; i++) {
+      route[i] = Integer.parseInt(br.readLine());
+    }
   }
 
   private void drawInstance() {
-    canvas = new TSPCanvas(tspInstance);
+    canvas = new TSPCanvas(tspInstance, route);
     add("Center", canvas);
+    validate();
   }
+
 
   @Override
   public String toString() {
     if(tspInstance == null) return "No instance";
-    StringBuilder sb = new StringBuilder();
-    sb.append("Size: ").append(tspInstance.length).append("\n");
+    StringBuilder instanceSb = new StringBuilder();
+    StringBuilder routeSb = new StringBuilder();
+    instanceSb.append("Size: ").append(tspInstance.length).append("\n");
     for(int i = 0; i < tspInstance.length; i++) {
-      sb.append(tspInstance[i].getX()).append(" ").append(tspInstance[i].getY()).append("\n");
+      instanceSb.append(tspInstance[i].getX()).append(" ").append(tspInstance[i].getY()).append("\n");
+      routeSb.append(route[i]).append("\n");
     }
-    return sb.toString();
+    instanceSb.append("\n").append(routeSb);
+    return instanceSb.toString();
   }
 
   private class Point {
@@ -98,42 +121,57 @@ public class TSPVisualizer extends JFrame {
 
   private class TSPCanvas extends Canvas {
     private Point[] points;
-    public TSPCanvas(Point[] points){
+    private int[] route;
+    public TSPCanvas(Point[] points, int[] route){
       this.points = points;
+      this.route = route;
     }
 
     @Override
     public void paint(Graphics g) {
-      g.drawString("TSPCanvas", 10, 20);
       drawBackground(g);
+      drawRoute(g);
       drawPoints(g);
-      //g.fillRect(50, 50, 5, 5);
+      validate();
     }
 
     private void drawBackground(Graphics g) {
       g.setColor(new Color(255,255,255));
-      g.fillRect(0, 0, MAPWIDTH, MAPHEIGHT);
+      g.fillRect(MARGINLEFT, MARGINTOP, MAPWIDTH, MAPHEIGHT);
       g.setColor(new Color(0,0,0));
-      g.drawRect(0,0, MAPWIDTH, MAPHEIGHT);
+      g.drawRect(MARGINLEFT, MARGINTOP, MAPWIDTH, MAPHEIGHT);
     }
 
     private void drawPoints(Graphics g) {
       int x, y;
       for(int i = 0; i < points.length; i++) {
-        x = (int) (points[i].getX()*SCALEX);
-        y = (int) (points[i].getY()*SCALEY);
+        x = (int) (MARGINLEFT+10+points[i].getX()*SCALEX);
+        y = (int) (MARGINTOP+10+points[i].getY()*SCALEY);
         g.setColor(new Color(0,0,0));
-        g.drawRect(x, y, 5, 5);
+        g.drawRect(x, y, 7, 7);
         g.setColor(new Color(20, 167, 8));
-        g.fillRect(x, y, 5, 5);
+        g.fillRect(x, y, 7, 7);
       }
+    }
+
+    private void drawRoute(Graphics g) {
+      int x1, y1, x2, y2;
+      for(int i = 0; i < route.length-1; i++) {
+        x1 = (int) (MARGINLEFT+13+points[route[i]].getX()*SCALEX);
+        y1 = (int) (MARGINTOP+13+points[route[i]].getY()*SCALEY);
+        x2 = (int) (MARGINLEFT+13+points[route[i+1]].getX()*SCALEX);
+        y2 = (int) (MARGINTOP+13+points[route[i+1]].getY()*SCALEY);
+        g.setColor(new Color(0,0,0));
+        g.drawLine(x1, y1, x2, y2);
+      }
+
     }
 
   }
 
   public static void main(String[] args) {
     TSPVisualizer tsp = new TSPVisualizer();
-    System.out.println(tsp);
+    //System.out.println(tsp);
   }
 
 }
