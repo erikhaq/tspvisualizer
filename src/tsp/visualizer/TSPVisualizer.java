@@ -148,19 +148,19 @@ public class TSPVisualizer extends JFrame {
         x = (int) (MARGINLEFT+10+points[i].getX()*SCALEX);
         y = (int) (MARGINTOP+10+points[i].getY()*SCALEY);
         g.setColor(new Color(0,0,0));
-        g.drawRect(x, y, 7, 7);
+        g.drawOval(x, y, 4, 4);
         g.setColor(new Color(20, 167, 8));
-        g.fillRect(x, y, 7, 7);
+        g.fillOval(x, y, 4, 4);
       }
     }
 
     private void drawRoute(Graphics g) {
       int x1, y1, x2, y2;
       for(int i = 0; i < route.length-1; i++) {
-        x1 = (int) (MARGINLEFT+13+points[route[i]].getX()*SCALEX);
-        y1 = (int) (MARGINTOP+13+points[route[i]].getY()*SCALEY);
-        x2 = (int) (MARGINLEFT+13+points[route[i+1]].getX()*SCALEX);
-        y2 = (int) (MARGINTOP+13+points[route[i+1]].getY()*SCALEY);
+        x1 = (int) (MARGINLEFT+12+points[route[i]].getX()*SCALEX);
+        y1 = (int) (MARGINTOP+12+points[route[i]].getY()*SCALEY);
+        x2 = (int) (MARGINLEFT+12+points[route[i+1]].getX()*SCALEX);
+        y2 = (int) (MARGINTOP+12+points[route[i+1]].getY()*SCALEY);
         g.setColor(new Color(0,0,0));
         g.drawLine(x1, y1, x2, y2);
       }
